@@ -112,4 +112,34 @@
     void *application_data;                       /**< can be used by upper layer*/
   };
 
-    
+/**
+ * Structure for Authorization headers.
+ * @var osip_authorization_t
+ */
+  typedef struct osip_authorization osip_authorization_t;
+
+/**
+ * Definition of the Authorization header.
+ * @struct osip_authorization
+ */
+  struct osip_authorization
+  {
+    char *auth_type;		/**< Authentication Type (Basic or Digest) */
+    char *username;		/**< login */
+    char *realm;		/**< realm (as a quoted-string) */
+    char *nonce;		/**< nonce */
+    char *uri;  		/**< uri */
+    char *response;		/**< response */
+    char *digest;		/**< digest */
+    char *algorithm;		/**< algorithm (optionnal) */
+    char *cnonce;		/**< cnonce (optionnal) */
+    char *opaque;		/**< opaque (optionnal) */
+    char *message_qop;		/**< message_qop (optionnal) */
+    char *nonce_count;		/**< nonce_count (optionnal) */
+    char *version;		/**< version (optional - NTLM) */
+    char *targetname;		/**< targetname (optional - NTLM) */
+    char *gssapi_data;		/**< gssapi-data (optional - NTLM) */
+    char *crand;
+	  char *cnum;
+    char *auth_param;		/**< other parameters (optionnal) */
+  };
