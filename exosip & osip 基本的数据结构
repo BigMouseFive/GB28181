@@ -40,7 +40,7 @@
   struct osip_list {
 
     int nb_elt;                 /**< Number of element in the list */
-    b *node;             /**< Next node containing element  */
+    __node_t *node;             /**< Next node containing element  */
 
   };
   
