@@ -195,5 +195,4 @@ _eXosip_build_response_default (struct eXosip_t *excontext, osip_message_t ** de
     １、通过osip_message_init来初始化response的数据结构
     ２、然后对sip_version, status处理
     ３、clone request的from/to/via/call_id/cseq到response，并且给to字段添加tag
-
- 
+    ４、设置了该context的user Agent
