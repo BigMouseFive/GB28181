@@ -177,3 +177,61 @@
     osip_nict_t *nict_context;  /**@internal */
     osip_nist_t *nist_context;  /**@internal */
   };
+
+
+### event类型
+EXOSIP_REGISTRATION_NEW     announce new registration.            宣布新的登记。
+EXOSIP_REGISTRATION_SUCCESS     user is successfully registred.            用户成功 registred
+EXOSIP_REGISTRATION_FAILURE     user is not registred.                用户不 registred        
+EXOSIP_REGISTRATION_REFRESHED     registration has been refreshed.        注册已刷新    
+EXOSIP_REGISTRATION_TERMINATED     UA is not registred any more.            UA是没有任何更多的registred
+EXOSIP_CALL_INVITE     announce a new call                    宣布一个新的呼叫            
+EXOSIP_CALL_REINVITE     announce a new INVITE within call            调用一个内公布新的邀请
+EXOSIP_CALL_NOANSWER     announce no answer within the timeout            在超时内没有公布答案        
+EXOSIP_CALL_PROCEEDING     announce processing by a remote app            公布一个远程应用程序处理    
+EXOSIP_CALL_RINGING     announce ringback                    公布电话铃响
+EXOSIP_CALL_ANSWERED     announce start of call                    公布电话会议开始
+EXOSIP_CALL_REDIRECTED     announce a redirection                    宣布重定向            
+EXOSIP_CALL_REQUESTFAILURE     announce a request failure            宣布一个请求失败
+EXOSIP_CALL_SERVERFAILURE     announce a server failure            宣布一个服务器失败        
+EXOSIP_CALL_GLOBALFAILURE     announce a global failure            宣布全球失败    
+EXOSIP_CALL_ACK     ACK received for 200ok to INVITE            应答收到 200ok邀请
+EXOSIP_CALL_CANCELLED     announce that call has been cancelled            宣布这一呼吁已被取消
+EXOSIP_CALL_TIMEOUT     announce that call has failed                宣布，调用失败
+EXOSIP_CALL_MESSAGE_NEW     announce new incoming request.            宣布新传入的请求。
+EXOSIP_CALL_MESSAGE_PROCEEDING     announce a 1xx for request.            公布要求1xx 的。
+EXOSIP_CALL_MESSAGE_ANSWERED     announce a 200ok
+EXOSIP_CALL_MESSAGE_REDIRECTED     announce a failure.
+EXOSIP_CALL_MESSAGE_REQUESTFAILURE     announce a failure.
+EXOSIP_CALL_MESSAGE_SERVERFAILURE     announce a failure.
+EXOSIP_CALL_MESSAGE_GLOBALFAILURE     announce a failure.
+EXOSIP_CALL_CLOSED     a BYE was received for this call            一个BYE收到此呼吁
+EXOSIP_CALL_RELEASED     call context is cleared.                调用上下文被清除。
+EXOSIP_MESSAGE_NEW     announce new incoming request.                宣布新传入的请求。
+EXOSIP_MESSAGE_PROCEEDING     announce a 1xx for request.
+EXOSIP_MESSAGE_ANSWERED     announce a 200ok
+EXOSIP_MESSAGE_REDIRECTED     announce a failure.
+EXOSIP_MESSAGE_REQUESTFAILURE     announce a failure.
+EXOSIP_MESSAGE_SERVERFAILURE     announce a failure.
+EXOSIP_MESSAGE_GLOBALFAILURE     announce a failure.
+EXOSIP_SUBSCRIPTION_UPDATE     announce incoming SUBSCRIBE.            宣布进入订阅。
+EXOSIP_SUBSCRIPTION_CLOSED     announce end of subscription.            宣布认购结束。
+EXOSIP_SUBSCRIPTION_NOANSWER     announce no answer
+EXOSIP_SUBSCRIPTION_PROCEEDING     announce a 1xx
+EXOSIP_SUBSCRIPTION_ANSWERED     announce a 200ok
+EXOSIP_SUBSCRIPTION_REDIRECTED     announce a redirection
+EXOSIP_SUBSCRIPTION_REQUESTFAILURE     announce a request failure
+EXOSIP_SUBSCRIPTION_SERVERFAILURE     announce a server failure
+EXOSIP_SUBSCRIPTION_GLOBALFAILURE     announce a global failure
+EXOSIP_SUBSCRIPTION_NOTIFY     announce new NOTIFY request            宣布新的 NOTIFY请求
+EXOSIP_SUBSCRIPTION_RELEASED     call context is cleared.
+EXOSIP_IN_SUBSCRIPTION_NEW     announce new incoming SUBSCRIBE.        宣布新传入的订阅
+EXOSIP_IN_SUBSCRIPTION_RELEASED     announce end of subscription.
+EXOSIP_NOTIFICATION_NOANSWER     announce no answer
+EXOSIP_NOTIFICATION_PROCEEDING     announce a 1xx
+EXOSIP_NOTIFICATION_ANSWERED     announce a 200ok
+EXOSIP_NOTIFICATION_REDIRECTED     announce a redirection
+EXOSIP_NOTIFICATION_REQUESTFAILURE     announce a request failure
+EXOSIP_NOTIFICATION_SERVERFAILURE     announce a server failure
+EXOSIP_NOTIFICATION_GLOBALFAILURE     announce a global failure
+EXOSIP_EVENT_COUNT     MAX number of events
