@@ -143,3 +143,37 @@
 	  char *cnum;
     char *auth_param;		/**< other parameters (optionnal) */
   };
+  
+  
+  struct osip_transaction
+  {
+    void *your_instance;    /**< User Defined Pointer. */
+    int transactionid;      /**Transaction Identifier. */
+    osip_fifo_t *transactionff; /events必须放入这个fifo */
+
+    osip_via_t *topvia;        /**< CALL-LEG definition (Top Via) */
+    osip_from_t *from;        /**< CALL-LEG definition (From)    */
+    osip_to_t *to;              /**< CALL-LEG definition (To)      */
+    osip_call_id_t *callid;     /**< CALL-LEG definition (Call-ID) */
+    osip_cseq_t *cseq;          /**< CALL-LEG definition (CSeq)    */
+
+    osip_message_t *orig_request;  /**< Initial request */
+    osip_message_t *last_response; /**< Last response */
+    osip_message_t *ack;       /**< ack request sent */
+
+    state_t state;        /*< Current state of the transaction */
+
+    time_t birth_time;      /**< birth date of transaction */
+    time_t completed_time;  /**< end date of transaction */
+
+    int in_socket;  /**< Optional socket for incoming message */
+    int out_socket;  /**< Optional place for outgoing message */
+
+    void *config; /**@internal transaction is managed by osip_t  */
+
+    osip_fsm_type_t ctx_type;   /**< Type of the transaction */
+    osip_ict_t *ict_context;    /**@internal */
+    osip_ist_t *ist_context;    /**@internal */
+    osip_nict_t *nict_context;  /**@internal */
+    osip_nist_t *nist_context;  /**@internal */
+  };
