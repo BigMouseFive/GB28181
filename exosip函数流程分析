@@ -1,0 +1,199 @@
+/**
+ * Build answer for a request.
+ * 
+ * @param excontext    eXosip_t instance.
+ * @param tid             id of transaction.
+ * @param status          status for SIP answer to build.
+ * @param answer          The SIP answer to build.
+ */
+  int eXosip_message_build_answer (struct eXosip_t *excontext, int tid, int status, osip_message_t ** answer)
+  {
+    osip_transaction_t *tr = NULL;
+  int i;
+
+  *answer = NULL;
+
+  if (tid <= 0)
+    return OSIP_BADPARAMETER;
+  if (status < 200 || status > 699)
+    return OSIP_BADPARAMETER;
+
+  if (tid > 0) {
+    _eXosip_transaction_find (excontext, tid, &tr);
+  }
+  if (tr == NULL) {
+    OSIP_TRACE (osip_trace (__FILE__, __LINE__, OSIP_ERROR, NULL, "eXosip: No call here?\n"));
+    return OSIP_NOTFOUND;
+  }
+
+  i = -1;
+  if (status < 300) {             /* 2xx answer */
+    i = _eXosip_build_response_default (excontext, answer, NULL, status, tr->orig_request);
+
+  }
+  else if (status > 300)        /* 3456xx answer */
+    i = _eXosip_build_response_default (excontext, answer, NULL, status, tr->orig_request);
+
+  if (i != 0)
+    return i;
+
+  if (status < 300) {             /* 2xx answer */
+    osip_header_t *refer_sub;
+    osip_message_header_get_byname (tr->orig_request, "Refer-Sub", 0, &refer_sub);
+    if (refer_sub!=NULL && refer_sub->hvalue!=NULL && osip_strncasecmp(refer_sub->hvalue, "false", 5)==0) {
+      osip_message_set_header (*answer, "Refer-Sub", "false");
+    }
+  }
+  return OSIP_SUCCESS;
+  }
+  ### 说明：
+      １、先从transaction线程链表中找到对应tid的transaction。
+      ２、通过_eX_eXosip_build_response_default函数来生成answer。
+      ３、对2XX的response,判断接收的request中是否有refer-sub字段，并做相应的处理。
+      
+  int
+_eXosip_build_response_default (struct eXosip_t *excontext, osip_message_t ** dest, osip_dialog_t * dialog, int status, osip_message_t * request)
+{
+  osip_generic_param_t *tag;
+  osip_message_t *response;
+  int i;
+
+  *dest = NULL;
+  if (request == NULL)
+    return OSIP_BADPARAMETER;
+
+  i = osip_message_init (&response);
+  if (i != 0)
+    return i;
+  /* initialise osip_message_t structure */
+  /* yet done... */
+
+  response->sip_version = (char *) osip_malloc (8 * sizeof (char));
+  if (response->sip_version == NULL) {
+    osip_message_free (response);
+    return OSIP_NOMEM;
+  }
+  sprintf (response->sip_version, "SIP/2.0");
+  osip_message_set_status_code (response, status);
+
+#ifndef MINISIZE
+  /* handle some internal reason definitions. */
+  if (MSG_IS_NOTIFY (request) && status == 481) {
+    response->reason_phrase = osip_strdup ("Subscription Does Not Exist");
+  }
+  else if (MSG_IS_SUBSCRIBE (request) && status == 202) {
+    response->reason_phrase = osip_strdup ("Accepted subscription");
+  }
+  else {
+    response->reason_phrase = osip_strdup (osip_message_get_reason (status));
+    if (response->reason_phrase == NULL) {
+      if (response->status_code == 101)
+        response->reason_phrase = osip_strdup ("Dialog Establishement");
+      else
+        response->reason_phrase = osip_strdup ("Unknown code");
+    }
+    response->req_uri = NULL;
+    response->sip_method = NULL;
+  }
+#else
+  response->reason_phrase = osip_strdup (osip_message_get_reason (status));
+  if (response->reason_phrase == NULL) {
+    if (response->status_code == 101)
+      response->reason_phrase = osip_strdup ("Dialog Establishement");
+    else
+      response->reason_phrase = osip_strdup ("Unknown code");
+  }
+  response->req_uri = NULL;
+  response->sip_method = NULL;
+#endif
+
+  if (response->reason_phrase == NULL) {
+    osip_message_free (response);
+    return OSIP_NOMEM;
+  }
+
+  i = osip_to_clone (request->to, &(response->to));
+  if (i != 0) {
+    osip_message_free (response);
+    return i;
+  }
+
+  i = osip_to_get_tag (response->to, &tag);
+  if (i != 0) {                 /* we only add a tag if it does not already contains one! */
+    if ((dialog != NULL) && (dialog->local_tag != NULL))
+      /* it should contain the local TAG we created */
+    {
+      osip_to_set_tag (response->to, osip_strdup (dialog->local_tag));
+    }
+    else {
+      if (status != 100)
+        osip_to_set_tag (response->to, _eXosip_malloc_new_random ());
+    }
+  }
+
+  i = osip_from_clone (request->from, &(response->from));
+  if (i != 0) {
+    osip_message_free (response);
+    return i;
+  }
+
+  {
+    osip_list_iterator_t it;
+    osip_via_t *via = (osip_via_t*)osip_list_get_first(&request->vias, &it);
+
+    while (via != NULL) {
+      osip_via_t *via2;
+
+      i = osip_via_clone (via, &via2);
+      if (i != 0) {
+        osip_message_free (response);
+        return i;
+      }
+      osip_list_add (&response->vias, via2, -1);
+      via = (osip_via_t *)osip_list_get_next(&it);
+    }
+  }
+
+  i = osip_call_id_clone (request->call_id, &(response->call_id));
+  if (i != 0) {
+    osip_message_free (response);
+    return i;
+  }
+  i = osip_cseq_clone (request->cseq, &(response->cseq));
+  if (i != 0) {
+    osip_message_free (response);
+    return i;
+  }
+#ifndef MINISIZE
+  if (MSG_IS_SUBSCRIBE (request)) {
+    osip_header_t *exp;
+    osip_header_t *evt_hdr;
+
+    osip_message_header_get_byname (request, "event", 0, &evt_hdr);
+    if (evt_hdr != NULL && evt_hdr->hvalue != NULL)
+      osip_message_set_header (response, "Event", evt_hdr->hvalue);
+    else
+      osip_message_set_header (response, "Event", "presence");
+    i = osip_message_get_expires (request, 0, &exp);
+    if (exp == NULL) {
+      osip_header_t *cp;
+
+      i = osip_header_clone (exp, &cp);
+      if (cp != NULL)
+        osip_list_add (&response->headers, cp, 0);
+    }
+  }
+#endif
+
+  osip_message_set_user_agent (response, excontext->user_agent);
+
+  *dest = response;
+  return OSIP_SUCCESS;
+}
+
+### 说明
+    １、通过osip_message_init来初始化response的数据结构
+    ２、然后对sip_version, status处理
+    ３、clone request的from/to/via/call_id/cseq到response，并且给to字段添加tag
+
+ 
